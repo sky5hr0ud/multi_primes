@@ -13,6 +13,7 @@ def prime(first, second, q):
         while j <= i**(0.5):
             if i % j == 0:
                 not_prime = True
+                j = i
                 break
             not_prime = False
             j += 1
