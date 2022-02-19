@@ -33,24 +33,35 @@ def primes_test_10000(generated_primes):
     return accurate
 
 
-def floor_divider(range_of_numbers):
-    divider_output = []
-    divider = range_of_numbers[1]
-    while divider >= 100:
-        divider = divider // 2
-        divider_output.append(divider)
-    return(divider_output)
+def floor_divider(range_of_numbers, q):
+    cpu = os.cpu_count() - 1
+    divider = (range_of_numbers[1] - range_of_numbers[0]) // cpu
+    new_range = []
+    j = range_of_numbers[0]
+    for i in range(0, cpu):
+        j = j + divider
+        new_range.append(j)
+    print(new_range)
+    args_tuple = []
+    args_tuple.append((new_range[-1] + 1, range_of_numbers[1], q))
+    args_tuple.append((range_of_numbers[0], new_range[0], q))
+    for i in range(2, cpu + 1):
+        args_tuple.append((new_range[-i] + 1, new_range[-(i - 1)], q))
+    print(args_tuple)
+    print(len(args_tuple))
+    return([args_tuple, cpu])
 
 
 def main():
-    range_of_numbers = [2, 10000]
+    range_of_numbers = [2, 100000000]
     q = multiprocessing.Queue()
     prime_proc = []
     generated_primes = []
-    # divided_range = floor_divider(range_of_numbers)
-    args_list = [(2, 50000000, q), (50000001, 70000000, q), (70000001, 90000000, q), (90000001, 100000000, q)]
-    for proc in range(0, 4):
-        proc = multiprocessing.Process(target=prime, args=(args_list[proc]))
+    divided_range = floor_divider(range_of_numbers, q)
+    print(divided_range)
+    # args_list = [(2, 5000, q), (5001, 7000, q), (7001, 9000, q), (9001, 10000, q)]
+    for proc in range(0, divided_range[1] + 1):
+        proc = multiprocessing.Process(target=prime, args=(divided_range[0][proc]))
         prime_proc.append(proc)
         proc.start()
     for proc in prime_proc:
@@ -58,9 +69,7 @@ def main():
         generated_primes.extend(primes_list)
     for proc in prime_proc:
         proc.join()
-    #print(generated_primes)
-
-
+    # print(generated_primes)
     # process1 = multiprocessing.Process(target=prime, args=(2, 5000, q))
     # prime_proc.append(process1)
     # process2 = multiprocessing.Process(target=prime, args=(5001, 7000, q))
