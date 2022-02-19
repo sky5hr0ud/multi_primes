@@ -43,7 +43,10 @@ def floor_divider(range_of_numbers, q):
         new_range.append(j)
     print(new_range)
     args_tuple = []
-    args_tuple.append((new_range[-1] + 1, range_of_numbers[1], q))
+    if new_range[-1] + 1 >= range_of_numbers[1]:
+        args_tuple.append((range_of_numbers[1], range_of_numbers[1], q))
+    else:
+        args_tuple.append((new_range[-1] + 1, range_of_numbers[1], q))
     args_tuple.append((range_of_numbers[0], new_range[0], q))
     for i in range(2, cpu + 1):
         args_tuple.append((new_range[-i] + 1, new_range[-(i - 1)], q))
